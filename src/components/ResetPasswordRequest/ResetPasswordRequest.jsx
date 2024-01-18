@@ -9,7 +9,7 @@ const ResetPasswordRequest = () => {
 
   const handleRequestPasswordReset = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/reset-password", {
+      const response = await fetch("https://backend-coderhouse-ncbs.onrender.com/api/reset-password", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

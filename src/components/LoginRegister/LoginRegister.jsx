@@ -31,7 +31,7 @@ const LoginRegister = () => {
       password: formData.get("password"),
     };
 
-    const response = await fetch("http://localhost:8080/api/sessions/login", {
+    const response = await fetch("https://backend-coderhouse-ncbs.onrender.com/api/sessions/login", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -42,13 +42,12 @@ const LoginRegister = () => {
     if (response.status === 200) {
       const datos = await response.json();
       setLoginData(datos); // Almacena los datos en el estado
-      console.log(loginData); // Verifica aquí
 
       document.cookie = `jwtCookie=${datos.token}; expires=${new Date(
         Date.now() + 1 * 24 * 60 * 60 * 1000
       ).toUTCString()};path=/;`;
       setIsLogeado(true);
-      navigate("/productos");
+       navigate("/"); 
     } else {
       console.log(response);
     }
@@ -70,7 +69,7 @@ const LoginRegister = () => {
     console.log(data);
 
     const response = await fetch(
-      "http://localhost:8080/api/sessions/register",
+      "https://backend-coderhouse-ncbs.onrender.com/api/sessions/register",
       {
         method: "POST",
         headers: {

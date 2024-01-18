@@ -7,7 +7,7 @@ const Products = () => {
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/products")
+    fetch("https://backend-coderhouse-ncbs.onrender.com/api/products")
       .then((response) => response.json())
       .then((data) => setProductos(data.docs))
       .catch((error) => console.log(error));

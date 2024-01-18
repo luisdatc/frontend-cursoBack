@@ -15,37 +15,40 @@ import ResetPasswordPage from "./components/ResetPasswordPage/ResetPasswordPage"
 import ResetPasswordRequest from "./components/ResetPasswordRequest/ResetPasswordRequest";
 import ResetPasswordConfirm from "./components/ResetPasswordConfirm/ResetPasswordConfirm";
 import ConfirmPasswordChange from "./components/ConfirmPasswordChange/ConfirmPasswordChange";
+import { CartProvider } from "./components/CartContext";
 
 function App() {
   return (
     <LogProvider>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/usuario" element={<LoginRegister />} />
-          <Route path="/new-product" element={<NewProduct />} />
-          <Route path="/productos" element={<Products />} />
-          <Route path="/productdetail/:id" element={<ProductDetail />} />
-          <Route path="/carrito" element={<ShoppingBag />} />
-          <Route
-            path="/reset-password-request"
-            element={<ResetPasswordRequest />}
-          />
-          <Route
-            path="/reset-password-confirm"
-            element={<ResetPasswordConfirm />}
-          />
-          <Route
-            path="/reset-password/:token"
-            element={<ResetPasswordPage />}
-          />
-          <Route
-            path="/confirm-password-change"
-            element={<ConfirmPasswordChange />}
-          />
-        </Routes>
-      </BrowserRouter>
+      <CartProvider> 
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/usuario" element={<LoginRegister />} />
+            <Route path="/new-product" element={<NewProduct />} />
+            <Route path="/productos" element={<Products />} />
+            <Route path="/productdetail/:id" element={<ProductDetail />} />
+            <Route path="/carrito" element={<ShoppingBag />} />
+            <Route
+              path="/reset-password-request"
+              element={<ResetPasswordRequest />}
+            />
+            <Route
+              path="/reset-password-confirm"
+              element={<ResetPasswordConfirm />}
+            />
+            <Route
+              path="/reset-password/:token"
+              element={<ResetPasswordPage />}
+            />
+            <Route
+              path="/confirm-password-change"
+              element={<ConfirmPasswordChange />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </LogProvider>
   );
 }

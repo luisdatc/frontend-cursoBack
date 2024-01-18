@@ -15,7 +15,7 @@ const NavBar = () => {
 
   const handleLogout = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:8080/api/sessions/logout", {
+    const response = await fetch("https://backend-coderhouse-ncbs.onrender.com/api/sessions/logout", {
       method: "GET",
       credentials: "include",
       headers: {

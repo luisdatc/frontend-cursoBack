@@ -16,7 +16,7 @@ const ResetPasswordPage = () => {
       }
 
       const response = await fetch(
-        `http://localhost:8080/api/reset-password/${token}`,
+        `https://backend-coderhouse-ncbs.onrender.com/api/reset-password/${token}`,
         {
           method: "POST",
           headers: {

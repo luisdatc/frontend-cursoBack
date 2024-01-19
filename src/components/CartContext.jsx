@@ -24,12 +24,15 @@ export const CartProvider = ({ children }) => {
       console.error("Error al obtener el carrito:", error);
     }
   };
-
+  
   const getTotal = () => {
-    // Calcular el total sumando los precios de cada producto
-    return cart.products
-      ? cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0)
-      : 0;
+    // Verificar si cart y cart.products están definidos
+    if (cart && cart.products) {
+      // Calcular el total sumando los precios de cada producto
+      return cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0);
+    } else {
+      return 0; // O cualquier valor predeterminado que desees cuando no haya productos en el carrito
+    }
   };
 
   useEffect(() => {

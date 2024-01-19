@@ -5,60 +5,54 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState({ products: [] });
+ 
+  const [cart, setCart] = useState([]);
+  const [cartId, setCartId] = useState();
 
-  useEffect(() => {
-    // Recuperar el carrito desde el almacenamiento local al cargar la página
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || { products: [] };
-    setCart(storedCart);
-  }, []);
-
-  useEffect(() => {
-    // Actualizar el almacenamiento local cuando el carrito cambie
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (product) => {
-    // Lógica para agregar productos al carrito
-    // Asegúrate de manejar las actualizaciones correctamente
-
-    setCart((prevCart) => {
-      // Evitar agregar duplicados, puedes ajustar esto según tu lógica
-      if (!prevCart.products.find((p) => p.id_prod._id === product.id_prod._id)) {
-        return {
-          ...prevCart,
-          products: [...prevCart.products, { ...product, quantity: 1 }],
-        };
+  const fetchCart = async () => {
+    try {
+      const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cartId}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener el carrito con FETCH");
       }
-      return prevCart;
-    });
+
+      const data = await response.json();
+      const cartData = data.payload.products;
+      setCartId(cartId);
+      setCart(cartData);
+    } catch (error) {
+      console.error("Error al obtener el carrito:", error);
+    }
   };
 
-  const updateQuantity = (productId, quantity) => {
-    // Lógica para actualizar la cantidad de un producto en el carrito
-    setCart((prevCart) => ({
-      ...prevCart,
-      products: prevCart.products.map((product) =>
-        product.id_prod._id === productId ? { ...product, quantity } : product
-      ),
-    }));
+  const getTotal = () => {
+    // Calcular el total sumando los precios de cada producto
+    return cart.products
+      ? cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0)
+      : 0;
   };
 
-  const removeFromCart = (productId) => {
-    // Lógica para eliminar un producto del carrito
-    setCart((prevCart) => ({
-      ...prevCart,
-      products: prevCart.products.filter((product) => product.id_prod._id !== productId),
-    }));
-  };
+  useEffect(() => {
+    const hasCookie = document.cookie
+      .split(";")
+      .some((item) => item.trim().startsWith("jwtCookie="));
+
+    if (hasCookie && cartId) {
+      fetchCart();
+      localStorage.setItem("cartId", cartId);
+
+      // Configurar un intervalo para llamar a fetchCart cada 5 minutos (puedes ajustar el tiempo según tus necesidades)
+      const intervalId = setInterval(fetchCart, 5 * 1000);
+
+      // Limpieza del intervalo al desmontar el componente
+      return () => clearInterval(intervalId);
+    }
+  }, [cartId]);
+
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart }}>
+    <CartContext.Provider value={{ cart, setCart, cartId, setCartId, fetchCart, getTotal}}>
       {children}
     </CartContext.Provider>
   );
-};
-
-export const useCart = () => {
-  return useContext(CartContext);
 };

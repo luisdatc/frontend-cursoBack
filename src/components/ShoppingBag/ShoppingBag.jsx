@@ -1,146 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./ShoppingBag.scss";
-import { useParams } from "react-router-dom";
-import { useCart } from "../CartContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { CartProvider } from "../CartContext";
 
 const ShoppingBag = () => {
-  const { cid } = useParams();
-  const { cart, updateQuantity, removeFromCart } = useCart();
+
+  const { cart, cartId, setCartId, setCart, fetchCart, getTotal} = useContext(CartProvider)
+
+  const navigate = useNavigate()
+
+  const createTicket = async()=>{
+    const idCart = localStorage.getItem("cartId")
+    const userEmail = localStorage.getItem("userEmail")
+
+    const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${idCart}/purchase`, {
+      method: "GET", 
+      headers: {
+        "content-type": "application/json",
+        "user-email": userEmail,
+      }
+    })
+    if(response.status === 200){
+      navigate("/")
+    }
+  }
 
   useEffect(() => {
+    const idCart = localStorage.getItem("cartId");
     const fetchCart = async () => {
       try {
-        const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}`); 
-        if (response.status === 200) {
-          const data = await response.json();
-          // Actualizar el carrito usando la función setCart del contexto
-          updateCart(data.mensaje); // Ajusta según la estructura de la respuesta del backend
-        } else {
-          // Manejar errores, por ejemplo, carrito no encontrado
+        const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${idCart}`);
+        if (!response.ok) {
+          throw new Error("Error al obtener el carrito con FETCH");
         }
+
+        const data = await response.json();
+        const cartData = data.payload.products;
+        setCartId(idCart);
+        setCart(cartData);
       } catch (error) {
         console.error("Error al obtener el carrito:", error);
       }
     };
 
     fetchCart();
-  }, [cid]);
-  
+  }, [cartId, setCartId, setCart]);
 
-  const getTotal = () => {
-    // Calcular el total sumando los precios de cada producto
-    return cart.products
-      ? cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0)
-      : 0;
-  };
 
-  const handleRemoveFromCart = async (productId) => {
+  const removeProductFromCart = async (productId) => {
     try {
-      const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}/products/${productId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://backend-coderhouse-ncbs.onrender.com/api/carts/${cartId}/product/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+          },
+        }
+      );
 
-      if (response.status === 200) {
-        // Actualizar el estado local del carrito después de eliminar el producto
-        setCarrito((prevCart) => ({
-          ...prevCart,
-          products: prevCart.products.filter((product) => product.id_prod._id !== productId),
-        }));
+      if (response.ok) {
+        // Actualizar el carrito después de eliminar el producto
+        fetchCart(cartId);
       } else {
-        // Manejar errores, por ejemplo, producto no encontrado
+        console.error("Error al eliminar el producto del carrito.");
       }
     } catch (error) {
-      console.error("Error al eliminar del carrito:", error);
-    }
-  };
-
-  const handleIncrementQuantity = async (productId) => {
-    try {
-      // Lógica para incrementar la cantidad en el carrito (actualmente en tu código)
-
-      // Llamar a la función updateQuantity del contexto del carrito
-      // con la nueva cantidad calculada
-      updateQuantity(productId, newQuantity);
-
-    } catch (error) {
-      console.error("Error al incrementar cantidad en el carrito:", error);
-    }
-    try {
-      // Realiza una solicitud PUT para incrementar la cantidad del producto en el carrito
-      const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}/products/${productId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: 1, // Puedes ajustar la cantidad según tus necesidades
-        }),
-      });
-
-      if (response.status === 200) {
-        // Actualizar el estado local del carrito después de incrementar la cantidad
-        setCarrito((prevCart) => ({
-          ...prevCart,
-          products: prevCart.products.map((product) =>
-            product.id_prod._id === productId
-              ? { ...product, quantity: product.quantity + 1 }
-              : product
-          ),
-        }));
-      } else {
-        // Manejar errores, por ejemplo, producto no encontrado
-      }
-    } catch (error) {
-      console.error("Error al incrementar cantidad en el carrito:", error);
-    }
-  };
-
-  const handleDecrementQuantity = async (productId) => {
-    try {
-      // Realiza una solicitud PUT para decrementar la cantidad del producto en el carrito
-      const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}/products/${productId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: -1, // Puedes ajustar la cantidad según tus necesidades
-        }),
-      });
-
-      if (response.status === 200) {
-        // Actualizar el estado local del carrito después de decrementar la cantidad
-        setCarrito((prevCart) => ({
-          ...prevCart,
-          products: prevCart.products.map((product) =>
-            product.id_prod._id === productId
-              ? { ...product, quantity: Math.max(0, product.quantity - 1) }
-              : product
-          ),
-        }));
-      } else {
-        // Manejar errores, por ejemplo, producto no encontrado
-      }
-    } catch (error) {
-      console.error("Error al decrementar cantidad en el carrito:", error);
+      console.error("Error al comunicarse con el servidor:", error);
     }
   };
 
   return (
     <div>
       <h2>Shopping Bag</h2>
-      {cart.products &&
-        cart.products.map((product) => (
+      {cart &&
+        cart.map((product) => (
           <div key={product.id_prod._id}>
-          <p>{product.id_prod && product.id_prod.title}</p>
+            <p>{product.id_prod && product.id_prod.title}</p>
             <p>Cantidad: {product.quantity}</p>
-            <button onClick={() => handleIncrementQuantity(product.id_prod._id)}>
-              Incrementar Cantidad
-            </button>
-            <button onClick={() => handleDecrementQuantity(product.id_prod._id)}>
-              Decrementar Cantidad
-            </button>
-            <button onClick={() => handleRemoveFromCart(product.id_prod._id)}>
+            <button onClick={() => removeProductFromCart(product.id_prod._id)}>
               Eliminar del Carrito
             </button>
           </div>

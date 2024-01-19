@@ -10,7 +10,7 @@ const ShoppingBag = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}`);
+        const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cid}`); 
         if (response.status === 200) {
           const data = await response.json();
           // Actualizar el carrito usando la función setCart del contexto
@@ -132,7 +132,7 @@ const ShoppingBag = () => {
       {cart.products &&
         cart.products.map((product) => (
           <div key={product.id_prod._id}>
-            <p>{product.id_prod.title}</p>
+          <p>{product.id_prod && product.id_prod.title}</p>
             <p>Cantidad: {product.quantity}</p>
             <button onClick={() => handleIncrementQuantity(product.id_prod._id)}>
               Incrementar Cantidad

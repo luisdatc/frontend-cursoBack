@@ -12,7 +12,7 @@ const ProductDetail = () => {
 
 
   useEffect(() => {
-    fetch(`https://backend-coderhouse-ncbs.onrender.com/api/products/${id}`)
+    fetch(`https://backend-coderhouse-ncbs.onrender.com/api/products/${id}`) 
       .then((response) => response.json())
       .then((data) => {
         setProduct(data);

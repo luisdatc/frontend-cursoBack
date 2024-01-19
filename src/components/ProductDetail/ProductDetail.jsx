@@ -1,39 +1,28 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.scss";
-import { useCart } from "../CartContext";
+import { CartProvider, useCart } from "../CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
-  const [cid, setCid] = useState("");
 
-  const {addToCart, cart} = useCart();
+  const {cart, fetchCart} = useContext(CartProvider);
 
 
   useEffect(() => {
-    fetch(`https://backend-coderhouse-ncbs.onrender.com/api/products/${id}`) 
+    fetch(`https://backend-coderhouse-ncbs.onrender.com/api/products/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setProduct(data);
       })
       .catch((error) => {
-        console.log("Fetch error:", error);
+        console.error("Fetch error:", error);
       });
   }, [id]);
 
   const handleAddToCart = async () => {
     try {
-      // Llamar a la función addToCart del contexto del carrito
-      addToCart(product);
-  
-      // Puedes mostrar un mensaje de éxito o actualizar la interfaz de usuario aquí
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-    }
-  
-    try {
-      // Obtener el id del carrito directamente del contexto
       const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cart.id}/products/${id}`, {
         method: "POST",
         headers: {
@@ -43,9 +32,12 @@ const ProductDetail = () => {
           quantity: 1, // O la cantidad que desees agregar
         }),
       });
-  
+
       if (response.status === 200) {
         // Actualizar la interfaz de usuario o mostrar un mensaje de éxito
+
+        // Después de agregar el producto al carrito, puedes llamar a fetchCart para actualizar el carrito
+        fetchCart();
       } else {
         // Manejar errores, por ejemplo, producto no disponible
       }
@@ -55,6 +47,7 @@ const ProductDetail = () => {
   };
 
 
+  
   return (
     <section className="productdetail">
       <div className="card mb-3 " /* style="max-width: 540px;" */>

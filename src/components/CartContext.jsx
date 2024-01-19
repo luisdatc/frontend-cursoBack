@@ -17,22 +17,18 @@ export const CartProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      const cartData = data.payload.products;
+      const cartData = data.payload.products || [];
       setCartId(cartId);
       setCart(cartData);
     } catch (error) {
       console.error("Error al obtener el carrito:", error);
     }
   };
-  
+
   const getTotal = () => {
-    // Verificar si cart y cart.products están definidos
-    if (cart && cart.products) {
-      // Calcular el total sumando los precios de cada producto
-      return cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0);
-    } else {
-      return 0; // O cualquier valor predeterminado que desees cuando no haya productos en el carrito
-    }
+    return cart.products
+      ? cart.products.reduce((total, product) => total + product.id_prod.price * product.quantity, 0)
+      : 0;
   };
 
   useEffect(() => {

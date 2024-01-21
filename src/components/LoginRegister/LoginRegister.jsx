@@ -2,6 +2,7 @@ import { useState, useRef, useContext } from "react";
 import "./LoginRegister.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { LogContext } from "../LogContext";
+import { ToastContainer, toast } from "react-toastify";
 
 const LoginRegister = () => {
   const [isLoginFormVisible, setLoginFormVisible] = useState(true);
@@ -12,6 +13,8 @@ const LoginRegister = () => {
     age: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Función para alternar entre el formulario de inicio de sesión y registro
   const toggleForm = () => {
@@ -22,16 +25,37 @@ const LoginRegister = () => {
   const loginFormRef = useRef(null);
   const registerFormRef = useRef(null);
 
+  const handleSuccess = (datos) => {
+    setLoginData(datos);
+    document.cookie = `jwtCookie=${datos.token}; expires=${new Date(
+      Date.now() + 1 * 24 * 60 * 60 * 1000
+    ).toUTCString()};path=/;`;
+    setIsLogeado(true);
+    navigate("/productos");
+  };
+  
+  const handleError = (error) => {  
+    if (error.includes("Error de red")) {
+      setError("Email o contraseña incorrectos");
+      toast.error("Email o contraseña incorrectos");
+    } else {
+      setError("Error desconocido");
+      toast.error("Error desconocido");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true)
+
     const formData = new FormData(loginFormRef.current);
 
     const data = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-
-    const response = await fetch("https://backend-coderhouse-ncbs.onrender.com/api/sessions/login", {
+try{
+   const response = await fetch("https://backend-coderhouse-ncbs.onrender.com/api/sessions/login", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -41,47 +65,52 @@ const LoginRegister = () => {
 
     if (response.status === 200) {
       const datos = await response.json();
-      setLoginData(datos); // Almacena los datos en el estado
-
-      document.cookie = `jwtCookie=${datos.token}; expires=${new Date(
-        Date.now() + 1 * 24 * 60 * 60 * 1000
-      ).toUTCString()};path=/;`;
-      setIsLogeado(true);
-       navigate("/"); 
+      handleSuccess(datos)
     } else {
-      console.log(response);
+      const { message } = await response.json();
+      handleError(message);
     }
+  }catch(error){
+    console.error("Error:", error);
+      handleError("Error de red");
+  }finally{
+    setIsLoading(false)
+  }
+}
+   
+
+const handleSubmit2 = async (e) => {
+  e.preventDefault();
+  const formData = new FormData(registerFormRef.current);
+
+  const data = {
+    first_name: formData.get("first_name"),
+    last_name: formData.get("last_name"),
+    email: formData.get("email"),
+    age: formData.get("age"),
+    password: formData.get("password"),
   };
 
-  const handleSubmit2 = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(registerFormRef.current);
+  const response = await fetch(
+    "http://https://backend-coderhouse-ncbs.onrender.com/api/sessions/register",
+    {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
 
-    // Crear un objeto para almacenar solo los campos del formulario de registro
-    const data = {
-      first_name: formData.get("first_name"),
-      last_name: formData.get("last_name"),
-      email: formData.get("email"),
-      age: formData.get("age"),
-      password: formData.get("password"),
-    };
-
-    console.log(data);
-
-    const response = await fetch(
-      "https://backend-coderhouse-ncbs.onrender.com/api/sessions/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    console.log(response);
-
+  if (response.status === 201) {
     registerFormRef.current.reset();
-  };
+  } else {
+    const { message } = await response.json();
+    console.error("Error:", message);
+  }
+};
+
+
 
   return (
     <section className="user">
@@ -170,8 +199,9 @@ const LoginRegister = () => {
 
                 <input
                   type="submit"
-                  value="Log In"
+                  value={isLoading ? "Cargando..." : "Log In"}
                   className="forms_buttons-action"
+                  disabled={isLoading}
                 />
               </div>
             </form>
@@ -241,6 +271,7 @@ const LoginRegister = () => {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </section>
   );
 };

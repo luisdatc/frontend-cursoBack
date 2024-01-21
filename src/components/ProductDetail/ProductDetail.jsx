@@ -1,13 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.scss";
-import { CartProvider, useCart } from "../CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState({});
 
-  const {cart, fetchCart} = useContext(CartProvider);
 
 
   useEffect(() => {
@@ -20,32 +18,6 @@ const ProductDetail = () => {
         console.error("Fetch error:", error);
       });
   }, [id]);
-
-  const handleAddToCart = async () => {
-    try {
-      const response = await fetch(`https://backend-coderhouse-ncbs.onrender.com/api/carts/${cart.id}/products/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: 1, // O la cantidad que desees agregar
-        }),
-      });
-
-      if (response.status === 200) {
-        // Actualizar la interfaz de usuario o mostrar un mensaje de éxito
-
-        // Después de agregar el producto al carrito, puedes llamar a fetchCart para actualizar el carrito
-        fetchCart();
-      } else {
-        // Manejar errores, por ejemplo, producto no disponible
-      }
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-    }
-  };
-
 
   
   return (
@@ -65,7 +37,7 @@ const ProductDetail = () => {
               <p className="card-text">{product.description}</p>
               <p className="card-text">Precio: ${product.price}</p>
               <p className="card-text">Precio: ${product.stock}</p>
-              <button className="CartBoton mx-auto" onClick={handleAddToCart}>
+              <button className="CartBoton mx-auto">
                 <span className="IconContainer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

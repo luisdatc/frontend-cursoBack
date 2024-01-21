@@ -15,12 +15,13 @@ import ResetPasswordPage from "./components/ResetPasswordPage/ResetPasswordPage"
 import ResetPasswordRequest from "./components/ResetPasswordRequest/ResetPasswordRequest";
 import ResetPasswordConfirm from "./components/ResetPasswordConfirm/ResetPasswordConfirm";
 import ConfirmPasswordChange from "./components/ConfirmPasswordChange/ConfirmPasswordChange";
-import { CartProvider } from "./components/CartContext";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
     <LogProvider>
-      <CartProvider> 
+
         <BrowserRouter>
           <NavBar />
           <Routes>
@@ -48,7 +49,7 @@ function App() {
             />
           </Routes>
         </BrowserRouter>
-      </CartProvider>
+
     </LogProvider>
   );
 }

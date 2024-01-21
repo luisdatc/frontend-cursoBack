@@ -80,9 +80,8 @@ const NavBar = () => {
                     </Link>
                   )}
                   <Link to="/carrito" className="shoppingBag">
-                    <button data-quantity="0" className="btn-cart">
+                    <button className="btn-cart">
                       <FaBagShopping className="bolsa" />
-                      <span className="quantity"></span>
                     </button>
                   </Link>
                 </Nav>

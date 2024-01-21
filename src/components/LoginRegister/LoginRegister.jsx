@@ -30,6 +30,7 @@ const LoginRegister = () => {
     document.cookie = `jwtCookie=${datos.token}; expires=${new Date(
       Date.now() + 1 * 24 * 60 * 60 * 1000
     ).toUTCString()};path=/;`;
+    document.cookie = "sessionCookie=true;path=/;"; // Agrega una cookie de sesión
     setIsLogeado(true);
     navigate("/productos");
   };

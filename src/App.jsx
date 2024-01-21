@@ -16,12 +16,14 @@ import ResetPasswordRequest from "./components/ResetPasswordRequest/ResetPasswor
 import ResetPasswordConfirm from "./components/ResetPasswordConfirm/ResetPasswordConfirm";
 import ConfirmPasswordChange from "./components/ConfirmPasswordChange/ConfirmPasswordChange";
 import 'react-toastify/dist/ReactToastify.css';
+import { CarritoProvider } from "./components/CarritoContext";
+import VistaAdministrador from "./components/VistaAdministrador/VistaAdministrador";
 
 
 function App() {
   return (
     <LogProvider>
-
+<CarritoProvider>
         <BrowserRouter>
           <NavBar />
           <Routes>
@@ -47,9 +49,10 @@ function App() {
               path="/confirm-password-change"
               element={<ConfirmPasswordChange />}
             />
+             <Route path="/admin" element={<VistaAdministrador/>} />
           </Routes>
         </BrowserRouter>
-
+</CarritoProvider>
     </LogProvider>
   );
 }

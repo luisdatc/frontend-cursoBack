@@ -7,7 +7,7 @@ const VistaAdministrador = () => {
 
   useEffect(() => {
     // Llamada a la API para obtener la lista de usuarios
-    fetch("https://backend-coderhouse-ncbs.onrender.com/api/users")
+    fetch("https://backend-coderhouse-ncbs.onrender.com/api/nombre-email")
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {

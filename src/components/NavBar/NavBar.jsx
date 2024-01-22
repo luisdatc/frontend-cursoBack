@@ -60,6 +60,9 @@ const NavBar = () => {
                   <Link to="/productos" className="nav-item nav-link">
                     Productos
                   </Link>
+                  <Link to="/admin" className="nav-item nav-link">
+                    administrador
+                  </Link>
                   {isLogeado ? (
                     <Link>
                       <button className="Boton" onClick={handleLogout}>

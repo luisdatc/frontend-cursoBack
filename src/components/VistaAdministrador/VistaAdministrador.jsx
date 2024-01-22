@@ -1,5 +1,5 @@
 // Importa useEffect y useMemo de React
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect} from "react";
 
 const VistaAdministrador = () => {
   const [usuarios, setUsuarios] = useState([]);

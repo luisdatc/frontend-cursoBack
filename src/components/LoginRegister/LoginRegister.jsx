@@ -93,7 +93,7 @@ const handleSubmit2 = async (e) => {
   };
 
   const response = await fetch(
-    "http://https://backend-coderhouse-ncbs.onrender.com/api/sessions/register",
+    "https://backend-coderhouse-ncbs.onrender.com/api/sessions/register",
     {
       method: "POST",
       headers: {

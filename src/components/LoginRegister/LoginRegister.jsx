@@ -104,12 +104,14 @@ const handleSubmit2 = async (e) => {
     }
   );
 
-  if (response.status === 201) {
+  if (response.status === 200) {
+  setTimeout(() => {
     registerFormRef.current.reset();
-  } else {
-    const { message } = await response.json();
-    console.error("Error:", message);
-  }
+  }, 0);
+} else {
+  const { message } = await response.json();
+  console.error("Error:", message);
+}
 };
 
 

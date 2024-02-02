@@ -104,6 +104,8 @@ const handleSubmit2 = async (e) => {
     }
   );
 
+  setIsLoading(false)
+
   if (response.status === 200) {
   setTimeout(() => {
     registerFormRef.current.reset();

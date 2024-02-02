@@ -82,6 +82,7 @@ try{
 
 const handleSubmit2 = async (e) => {
   e.preventDefault();
+  setIsLoading(true)
   const formData = new FormData(registerFormRef.current);
 
   const data = {
@@ -263,9 +264,10 @@ const handleSubmit2 = async (e) => {
               </fieldset>
               <div className="forms_buttons">
                 <input
-                  type="submit"
-                  value="Sign up"
                   className="forms_buttons-action"
+                  type="submit"
+                  value={isLoading ? "Registrando..." : "Sign Up"}
+                  disabled={isLoading}
                 />
               </div>
             </form>
